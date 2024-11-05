@@ -1,3 +1,7 @@
+### Command
+```python
+from bookshelf.models import Book
+
 # Delete the book
 book.delete()
 
