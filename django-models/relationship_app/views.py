@@ -7,6 +7,9 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponse
+from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import render
+from .models import UserProfile
 
 # List all books
 def list_books(request):
@@ -53,32 +56,24 @@ def login_view(request):
 class CustomLogoutView(LogoutView):
     next_page = 'login'  # Redirect to login after logging out
 
-# Function to check if the user is an Admin
+
 def is_admin(user):
-    return hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
+    return user.userprofile.role == 'Admin'
 
-# Function to check if the user is a Librarian
 def is_librarian(user):
-    return hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian'
+    return user.userprofile.role == 'Librarian'
 
-
-# Function to check if the user is a Member
 def is_member(user):
-    return hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
+    return user.userprofile.role == 'Member'
 
-   
-
-# Admin view (Only accessible by Admin)
 @user_passes_test(is_admin)
 def admin_view(request):
-    return HttpResponse("Welcome to the Admin Dashboard.")
+    return render(request, 'admin_view.html')
 
-# Librarian view (Only accessible by Librarians)
 @user_passes_test(is_librarian)
 def librarian_view(request):
-    return HttpResponse("Welcome to the Librarian Dashboard.")
+    return render(request, 'librarian_view.html')
 
-# Member view (Only accessible by Members)
 @user_passes_test(is_member)
 def member_view(request):
-    return HttpResponse("Welcome to the Member Dashboard.")
+    return render(request, 'member_view.html')
