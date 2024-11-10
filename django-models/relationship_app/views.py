@@ -5,6 +5,8 @@ from relationship_app.models import Library
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.views import LogoutView
+from django.contrib.auth.decorators import user_passes_test
+from django.http import HttpResponse
 
 # List all books
 def list_books(request):
@@ -50,3 +52,30 @@ def login_view(request):
 # This will automatically log the user out and redirect them to the login page
 class CustomLogoutView(LogoutView):
     next_page = 'login'  # Redirect to login after logging out
+
+# Function to check if the user is an Admin
+def is_admin(user):
+    return user.userprofile.role == 'Admin'
+
+# Function to check if the user is a Librarian
+def is_librarian(user):
+    return user.userprofile.role == 'Librarian'
+
+# Function to check if the user is a Member
+def is_member(user):
+    return user.userprofile.role == 'Member'
+
+# Admin view (Only accessible by Admin)
+@user_passes_test(is_admin)
+def admin_view(request):
+    return HttpResponse("Welcome to the Admin Dashboard.")
+
+# Librarian view (Only accessible by Librarians)
+@user_passes_test(is_librarian)
+def librarian_view(request):
+    return HttpResponse("Welcome to the Librarian Dashboard.")
+
+# Member view (Only accessible by Members)
+@user_passes_test(is_member)
+def member_view(request):
+    return HttpResponse("Welcome to the Member Dashboard.")
