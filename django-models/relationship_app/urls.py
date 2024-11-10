@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
-from django.contrib.auth import views as auth_views
+from . import views
+from django.contrib.auth.views import LoginView, LogoutView
 
 urlpatterns = [
     # URL pattern for the function-based view to list all books
@@ -10,8 +11,8 @@ urlpatterns = [
     path('library/<int:pk>/', views.LibraryDetailView.as_view(), name='library_detail'),
 
     # User authentication URLs
-    path('login/', views.login_view, name='login'),
-    path('logout/', views.CustomLogoutView.as_view(), name='logout'),
+    path('login/', LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout/', LogoutView.as_view(template_name='logout.html'), name='logout'),
     path('register/', views.register, name='register'),
 
    
