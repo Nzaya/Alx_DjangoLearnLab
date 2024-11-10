@@ -27,6 +27,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+STATIC_URL = '/static/'
+
+# For collecting static files during deployment
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# Authentication Settings
+LOGIN_REDIRECT_URL = 'home'  # Redirect after login
+LOGOUT_REDIRECT_URL = 'login'  # Redirect after logout
 
 # Application definition
 
@@ -55,7 +63,9 @@ ROOT_URLCONF = 'django_models.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
