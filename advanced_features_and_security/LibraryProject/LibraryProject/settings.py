@@ -41,6 +41,8 @@ SESSION_COOKIE_SECURE = True  # Ensure session cookies are only sent over HTTPS
 ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = 'accounts.CustomUser'
+AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
 
 # Application definition
@@ -53,6 +55,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bookshelf',
+    'relationship_app',
+    'accounts',
     'users',
     'csp'
 ]
