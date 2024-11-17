@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ga&ix7jo$1^2=_j70vpcr0k&_6c$16n+*@^es6!@u$dibfeg0%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
 # Set DEBUG to False in production
 DEBUG = False
@@ -36,6 +36,23 @@ SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent browsers from interpreting files a
 # Ensure cookies are only sent over HTTPS
 CSRF_COOKIE_SECURE = True  # Ensure CSRF cookies are only sent over HTTPS
 SESSION_COOKIE_SECURE = True  # Ensure session cookies are only sent over HTTPS
+
+
+# Enforce HTTPS for production
+# Enable HTTP Strict Transport Security (HSTS)
+SECURE_SSL_REDIRECT = True  # Redirect HTTP to HTTPS
+SECURE_HSTS_SECONDS = 31536000  # Enforce HSTS for 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Include all subdomains in HSTS
+SECURE_HSTS_PRELOAD = True  # Allow HSTS preloading
+
+# Ensure cookies are only sent over HTTPS
+CSRF_COOKIE_SECURE = True  # CSRF cookies only sent over HTTPS
+SESSION_COOKIE_SECURE = True  # Session cookies only sent over HTTPS
+
+# Additional security headers
+X_FRAME_OPTIONS = 'DENY'  # Prevent clickjacking
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent MIME-type sniffing
+SECURE_BROWSER_XSS_FILTER = True  # Enable XSS filtering in the browser
 
 
 ALLOWED_HOSTS = []
