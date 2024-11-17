@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Book
 from .forms import BookForm
+from .forms import ExampleForm
 
 # View to list all books (with 'can_view' permission)
 @permission_required('bookshelf.can_view', raise_exception=True)
