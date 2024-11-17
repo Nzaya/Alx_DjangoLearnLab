@@ -11,3 +11,7 @@ class BookForm(forms.ModelForm):
         if not title.isalpha():
             raise forms.ValidationError("Title must contain only letters")
         return title
+    
+
+class ExampleForm(forms.Form):
+    example_field = forms.CharField(max_length=100)
