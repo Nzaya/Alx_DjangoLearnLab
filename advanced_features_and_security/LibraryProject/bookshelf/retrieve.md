@@ -1,3 +1,4 @@
-# Retrieve and display all Book instances
-book = Book.objects.get(id=book.id)
-print(book)  # Expected output: 1984 by George Orwell (1949)
+book = Book.objects.get(title="1984")
+book
+# Expected Output:
+# <Book: 1984 by George Orwell (1949)>

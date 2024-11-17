@@ -1,4 +1,1 @@
-"# Introduction to Django" 
- password = admin
- email = abc@mail.com
- user = admin
+LibraryProject: A Django-based project setup guide
