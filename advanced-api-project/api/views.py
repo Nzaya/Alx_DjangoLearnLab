@@ -10,6 +10,7 @@ class BookListView(generics.ListAPIView):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = [permissions.AllowAny]  # No restrictions on accessing the list
 
 
 class CreateView(generics.CreateAPIView):
@@ -26,6 +27,16 @@ class CreateView(generics.CreateAPIView):
         Custom logic before saving the serializer during book creation.
         """
         serializer.save()
+
+
+class DetailView(generics.RetrieveAPIView):
+    """
+    Handles retrieving a single book by its ID.
+    Accessible to all users.
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [permissions.AllowAny]  # No restrictions on retrieving a single book
 
 
 class UpdateView(generics.UpdateAPIView):
