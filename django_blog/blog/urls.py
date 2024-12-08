@@ -14,6 +14,7 @@ urlpatterns = [
     path('post/<int:pk>/', views.PostDetailView.as_view(), name='post_detail'),  # Detail view for individual post
     path('post/new/', views.PostCreateView.as_view(), name='post_create'),  # Create new post
     path('post/<int:pk>/edit/', views.PostUpdateView.as_view(), name='post_edit'),  # Edit post
+    path('post/<int:pk>/update/', views.PostUpdateView.as_view(), name='post_update'), # Update post
     path('post/<int:pk>/delete/', views.PostDeleteView.as_view(), name='post_delete'),  # Delete post
 
 ]
