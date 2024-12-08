@@ -163,13 +163,16 @@ class CommentDeleteView(DeleteView):
         return Comment.objects.filter(pk=self.kwargs['pk'])
     
 # Implement Search View
-def search(request):
-    query = request.GET.get('q', '')
+def search_posts(request):
+    query = request.GET.get('q', '')  # Get the search query from the URL
+    posts = Post.objects.all()
+
     if query:
-        posts = Post.objects.filter(
-            Q(title__icontains=query) | Q(content__icontains=query)
-        )
-    else:
-        posts = Post.objects.all()
-    
+        # Filter by title, content, or tags
+        posts = posts.filter(
+            Q(title__icontains=query) |  # Match posts where title contains the search query
+            Q(content__icontains=query) |  # Match posts where content contains the search query
+            Q(tags__name__icontains=query)  # Match posts where tags contain the search query
+        ).distinct()  # Ensure no duplicate posts are returned
+
     return render(request, 'blog/search_results.html', {'posts': posts, 'query': query})
