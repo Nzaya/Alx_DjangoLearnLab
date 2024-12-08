@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import Post
+from .models import Post, Tag
 from .forms import PostForm
 from .forms import CommentForm
 from .models import Post, Comment
@@ -177,3 +177,13 @@ def search_posts(request):
         'posts': posts,
         'query': query
     })
+
+class PostByTagListView(ListView):
+    model = Post
+    template_name = 'blog/posts_by_tag.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        tag_slug = self.kwargs['tag_slug']
+        tag = Tag.objects.get(slug=tag_slug)  # Fetch the tag by slug
+        return Post.objects.filter(tags=tag)  # Filter posts by the tag
