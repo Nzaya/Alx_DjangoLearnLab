@@ -10,10 +10,10 @@ urlpatterns = [
     path("profile/", views.profile, name="profile"),
     path("profile/edit/", views.edit_profile, name="edit_profile"),
 
-    path('', views.PostListView.as_view(), name='post-list'),
-    path('<int:pk>/', views.PostDetailView.as_view(), name='post-detail'),
-    path('new/', views.PostCreateView.as_view(), name='post-create'),
-    path('<int:pk>/edit/', views.PostUpdateView.as_view(), name='post-edit'),
-    path('<int:pk>/delete/', views.PostDeleteView.as_view(), name='post-delete'),
+    path('posts/', views.PostListView.as_view(), name='post_list'),  # List view for all posts
+    path('post/<int:pk>/', views.PostDetailView.as_view(), name='post_detail'),  # Detail view for individual post
+    path('post/new/', views.PostCreateView.as_view(), name='post_create'),  # Create new post
+    path('post/<int:pk>/edit/', views.PostUpdateView.as_view(), name='post_edit'),  # Edit post
+    path('post/<int:pk>/delete/', views.PostDeleteView.as_view(), name='post_delete'),  # Delete post
 
 ]
