@@ -7,6 +7,8 @@ from .forms import ProfileForm
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
 from .models import Post
 from .forms import PostForm
 from .forms import CommentForm
@@ -122,36 +124,44 @@ def post_detail(request, pk):
         'comment_form': comment_form
     })
 
-# View to edit a comment
-@login_required
-def edit_comment(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
 
-    # Ensure only the author can edit the comment
-    if comment.author != request.user:
-        raise Http404
+# Create View for Comment
+class CommentCreateView(CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/create_comment.html'
 
-    if request.method == "POST":
-        form = CommentForm(request.POST, instance=comment)
-        if form.is_valid():
-            form.save()
-            return redirect('post_detail', pk=comment.post.pk)
-    else:
-        form = CommentForm(instance=comment)
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        return super().form_valid(form)
 
-    return render(request, 'blog/edit_comment.html', {'form': form})
+    def get_success_url(self):
+        return reverse_lazy('post_detail', kwargs={'pk': self.kwargs['pk']})
 
-# View to delete a comment
-@login_required
-def delete_comment(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
 
-    # Ensure only the author can delete the comment
-    if comment.author != request.user:
-        raise Http404
+# Update View for Comment
+class CommentUpdateView(UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/edit_comment.html'
 
-    if request.method == "POST":
-        comment.delete()
-        return redirect('post_detail', pk=comment.post.pk)
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(author=self.request.user)
 
-    return render(request, 'blog/delete_comment.html', {'comment': comment})
+    def get_success_url(self):
+        return reverse_lazy('post_detail', kwargs={'pk': self.object.post.pk})
+
+
+# Delete View for Comment
+class CommentDeleteView(DeleteView):
+    model = Comment
+    template_name = 'blog/delete_comment.html'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(author=self.request.user)
+
+    def get_success_url(self):
+        return reverse_lazy('post_detail', kwargs={'pk': self.object.post.pk})
