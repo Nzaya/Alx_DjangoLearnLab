@@ -1,4 +1,4 @@
-from django import views
+from . import views
 from django.urls import path
 from .views import PostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView
 
@@ -22,4 +22,6 @@ urlpatterns = [
     path('posts/<int:pk>/comments/<int:comment_pk>/edit/', views.CommentUpdateView.as_view(), name='edit_comment'),
     path('comment/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='delete_comment'),
     path('post/<int:pk>/comments/new/', views.CommentCreateView.as_view(), name='new_comment'),
+
+    path('search/', views.search, name='search'),  # Search URL
 ]

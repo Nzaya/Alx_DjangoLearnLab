@@ -15,6 +15,7 @@ from .forms import CommentForm
 from .models import Post, Comment
 from .forms import CommentForm
 from django.http import Http404
+from django.db.models import Q
 
 class PostListView(ListView):
     model = Post
@@ -160,3 +161,15 @@ class CommentDeleteView(DeleteView):
 
     def get_queryset(self):
         return Comment.objects.filter(pk=self.kwargs['pk'])
+    
+# Implement Search View
+def search(request):
+    query = request.GET.get('q', '')
+    if query:
+        posts = Post.objects.filter(
+            Q(title__icontains=query) | Q(content__icontains=query)
+        )
+    else:
+        posts = Post.objects.all()
+    
+    return render(request, 'blog/search_results.html', {'posts': posts, 'query': query})
