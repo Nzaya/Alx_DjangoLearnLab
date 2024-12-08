@@ -1,12 +1,28 @@
-{% extends "base.html" %}
+{% extends "base_generic.html" %}
+
 {% block content %}
-    <h1>{{ post.title }}</h1>
-    <p>{{ post.content }}</p>
-    <p>Author: {{ post.author }}</p>
-    <p>Published on: {{ post.published_date }}</p>
-    {% if user == post.author %}
-        <a href="{% url 'post-edit' post.pk %}">Edit</a>
-        <a href="{% url 'post-delete' post.pk %}">Delete</a>
-    {% endif %}
-    <a href="{% url 'post-list' %}">Back to All Posts</a>
+  <h1>{{ post.title }}</h1>
+  <p>{{ post.content }}</p>
+
+  <h2>Comments</h2>
+  <ul>
+    {% for comment in comments %}
+      <li>
+        <strong>{{ comment.author.username }}</strong>: {{ comment.content }}
+        {% if comment.author == user %}
+          <a href="{% url 'edit_comment' pk=comment.pk %}">Edit</a> |
+          <a href="{% url 'delete_comment' pk=comment.pk %}">Delete</a>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+
+  {% if user.is_authenticated %}
+    <h3>Leave a Comment</h3>
+    <form method="post">
+      {% csrf_token %}
+      {{ comment_form.as_p }}
+      <button type="submit">Post Comment</button>
+    </form>
+  {% endif %}
 {% endblock %}
