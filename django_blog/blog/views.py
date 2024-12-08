@@ -126,14 +126,14 @@ def post_detail(request, pk):
 
 
 # Create View for Comment
-class CommentCreateView(CreateView):
+class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment
-    form_class = CommentForm
-    template_name = 'blog/create_comment.html'
+    fields = ['content']  # Adjust the fields as per your model
+    template_name = 'blog/comment_form.html'  # Template for creating a comment
 
     def form_valid(self, form):
-        form.instance.author = self.request.user
-        form.instance.post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        form.instance.author = self.request.user  # Assign the current user as the comment author
+        form.instance.post_id = self.kwargs['pk']  # Assign the post ID from the URL
         return super().form_valid(form)
 
     def get_success_url(self):
