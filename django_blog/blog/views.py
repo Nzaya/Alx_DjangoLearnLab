@@ -140,28 +140,23 @@ class CommentCreateView(CreateView):
         return reverse_lazy('post_detail', kwargs={'pk': self.kwargs['pk']})
 
 
-# Update View for Comment
 class CommentUpdateView(UpdateView):
     model = Comment
-    form_class = CommentForm
-    template_name = 'blog/edit_comment.html'
+    fields = ['content']  # Adjust the fields to include the ones you want to allow updating
+    template_name = 'blog/comment_form.html'  # Adjust the template path if needed
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset.filter(author=self.request.user)
+        return Comment.objects.filter(pk=self.kwargs['pk'])
 
     def get_success_url(self):
-        return reverse_lazy('post_detail', kwargs={'pk': self.object.post.pk})
+        return reverse_lazy('post_detail', kwargs={'pk': self.kwargs['pk']})
 
 
 # Delete View for Comment
 class CommentDeleteView(DeleteView):
     model = Comment
-    template_name = 'blog/delete_comment.html'
+    template_name = 'blog/comment_confirm_delete.html'  # Template for confirming deletion
+    success_url = reverse_lazy('post_list')  # Redirect to the post list or any desired URL
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset.filter(author=self.request.user)
-
-    def get_success_url(self):
-        return reverse_lazy('post_detail', kwargs={'pk': self.object.post.pk})
+        return Comment.objects.filter(pk=self.kwargs['pk'])
