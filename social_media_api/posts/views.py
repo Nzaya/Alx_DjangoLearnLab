@@ -1,10 +1,9 @@
 from rest_framework import viewsets, permissions
-from rest_framework import generics, permissions
+from rest_framework import generics
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from .permissions import IsAuthorOrReadOnly
 from rest_framework import filters
-from .serializers import PostSerializer
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().order_by('-created_at')
@@ -31,4 +30,6 @@ class UserFeedView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Post.objects.filter(author__in=user.following.all()).order_by('-created_at')
+        # Get posts from users that the current user is following
+        following_users = user.following.all()  # List of users the current user is following
+        return Post.objects.filter(author__in=following_users).order_by('-created_at')
