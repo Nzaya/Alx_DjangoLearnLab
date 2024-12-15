@@ -2,28 +2,18 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
 
+# Get the user model dynamically
 User = get_user_model()
 
-class UserRegistrationSerializer(serializers.ModelSerializer):
-    # Explicitly define CharField for password fields
+class UserRegistrationSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=150, required=True)
     email = serializers.CharField(max_length=255, required=True)
-    password = serializers.CharField(
-        write_only=True, required=True, style={'input_type': 'password'}
-    )
-    confirm_password = serializers.CharField(
-        write_only=True, required=True, style={'input_type': 'password'}
-    )
-    bio = serializers.CharField(max_length=500, required=False, allow_blank=True)
-    profile_picture = serializers.ImageField(required=False)
-
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email', 'password', 'confirm_password', 'bio', 'profile_picture']
+    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
+    confirm_password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
 
     def validate(self, data):
         """
-        Validate that password and confirm_password fields match.
+        Ensure passwords match.
         """
         if data['password'] != data['confirm_password']:
             raise serializers.ValidationError("Passwords do not match.")
@@ -31,39 +21,28 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """
-        Create a new user and generate a token for authentication.
+        Create a user and generate an authentication token.
         """
-        # Remove confirm_password before passing data to user creation
-        validated_data.pop('confirm_password')
-
-        # Use get_user_model().objects.create_user to create a user
-        user = get_user_model().objects.create_user(
+        validated_data.pop('confirm_password')  # Remove confirm_password as it's not part of user model fields
+        
+        # Explicit use of get_user_model().objects.create_user
+        user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
-            password=validated_data['password'],
-            bio=validated_data.get('bio', ''),
-            profile_picture=validated_data.get('profile_picture')
+            password=validated_data['password']
         )
-
-        # Generate a token for the user
-        Token.objects.create(user=user)
-
+        Token.objects.create(user=user)  # Generate an auth token for the user
         return user
 
 
 class UserLoginSerializer(serializers.Serializer):
-    """
-    Serializer for user login.
-    """
-    username = serializers.CharField(required=True)
-    password = serializers.CharField(
-        write_only=True, required=True, style={'input_type': 'password'}
-    )
+    username = serializers.CharField(max_length=150, required=True)
+    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
 
 
 class TokenSerializer(serializers.ModelSerializer):
     """
-    Serializer for Token model to return user token.
+    Serializer for displaying token and user details.
     """
     class Meta:
         model = Token
