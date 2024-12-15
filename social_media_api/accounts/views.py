@@ -5,23 +5,22 @@ from django.contrib.auth import get_user_model
 from .serializers import UserRegistrationSerializer
 from .serializers import UserSerializer
 
-User = get_user_model()
+CustomUser = get_user_model()  # This gets your custom user model (CustomUser)
 
 class UserRegistrationView(generics.CreateAPIView):
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()  # This will query all users from the CustomUser model
     serializer_class = UserRegistrationSerializer
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
-        user = User.objects.get(username=response.data['username'])
+        user = CustomUser.objects.get(username=response.data['username'])
         token, created = Token.objects.get_or_create(user=user)
         return Response({
             'token': token.key,
             'user_id': user.id,
             'username': user.username
         })
-
 
 class LoginView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
@@ -38,7 +37,7 @@ class LoginView(generics.GenericAPIView):
 
 class FollowUserView(generics.UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()  
     serializer_class = UserSerializer
 
     def post(self, request, *args, **kwargs):
@@ -48,7 +47,7 @@ class FollowUserView(generics.UpdateAPIView):
 
 class UnfollowUserView(generics.UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()  
     serializer_class = UserSerializer
 
     def post(self, request, *args, **kwargs):
