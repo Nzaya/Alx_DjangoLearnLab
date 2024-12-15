@@ -43,7 +43,8 @@ class LikePostView(generics.CreateAPIView):
     queryset = Post.objects.all()
 
     def post(self, request, *args, **kwargs):
-        post = generics.get_object_or_404(Post, pk=kwargs.get('pk'))  # Using get_object_or_404 here
+        pk = kwargs.get('pk')  # Get pk from kwargs
+        post = generics.get_object_or_404(Post, pk=pk)  # Using get_object_or_404 here
         
         # Use get_or_create to handle liking a post or creating a new like
         like, created = Like.objects.get_or_create(user=request.user, post=post)  # Using get_or_create here
@@ -68,7 +69,8 @@ class UnLikePostView(generics.DestroyAPIView):
     queryset = Like.objects.all()
 
     def delete(self, request, *args, **kwargs):
-        post = generics.get_object_or_404(Post, pk=kwargs.get('pk'))  # Using get_object_or_404 
+        pk = kwargs.get('pk')  # Get pk from kwargs
+        post = generics.get_object_or_404(Post, pk=pk)  # Using get_object_or_404 
         like = Like.objects.filter(user=request.user, post=post)
         
         if not like.exists():
