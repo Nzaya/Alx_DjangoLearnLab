@@ -23,15 +23,15 @@ class UserRegistrationSerializer(serializers.Serializer):
         """
         Create a user and generate an authentication token.
         """
-        validated_data.pop('confirm_password')  # Remove confirm_password as it's not part of user model fields
-        
-        # Explicit use of get_user_model().objects.create_user
+        validated_data.pop('confirm_password')  # Remove confirm_password as it's not part of the model
+
+        # Explicitly using get_user_model().objects.create_user
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
             password=validated_data['password']
         )
-        Token.objects.create(user=user)  # Generate an auth token for the user
+        Token.objects.create(user=user)  # Create auth token for the user
         return user
 
 
@@ -42,8 +42,10 @@ class UserLoginSerializer(serializers.Serializer):
 
 class TokenSerializer(serializers.ModelSerializer):
     """
-    Serializer for displaying token and user details.
+    Serializer for returning token key and user data.
     """
+    key = serializers.CharField()  # Explicit usage of serializers.CharField()
+
     class Meta:
         model = Token
         fields = ['key', 'user']
