@@ -1,11 +1,13 @@
-from rest_framework import viewsets, permissions
-from rest_framework import generics
-from .models import Post, Comment
+# posts/views.py
+
+from rest_framework import viewsets, permissions, status, generics
+from rest_framework.response import Response
+from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer
 from .permissions import IsAuthorOrReadOnly
 from django.contrib.contenttypes.models import ContentType
+from notifications.models import Notification  
 from rest_framework import filters
-from .models import Post, Like
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().order_by('-created_at')
@@ -41,13 +43,13 @@ class LikePostView(generics.CreateAPIView):
     queryset = Post.objects.all()
 
     def post(self, request, *args, **kwargs):
-        post = self.get_object()
-        # Ensure the user hasn't already liked the post
-        if Like.objects.filter(user=request.user, post=post).exists():
-            return Response({"detail": "You have already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
+        post = generics.get_object_or_404(Post, pk=kwargs.get('pk'))  # Using get_object_or_404 here
         
-        # Create the like
-        Like.objects.create(user=request.user, post=post)
+        # Use get_or_create to handle liking a post or creating a new like
+        like, created = Like.objects.get_or_create(user=request.user, post=post)  # Using get_or_create here
+        
+        if not created:
+            return Response({"detail": "You have already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
         
         # Create a notification
         notification = Notification.objects.create(
@@ -66,8 +68,9 @@ class UnLikePostView(generics.DestroyAPIView):
     queryset = Like.objects.all()
 
     def delete(self, request, *args, **kwargs):
-        post = self.get_object()
+        post = generics.get_object_or_404(Post, pk=kwargs.get('pk'))  # Using get_object_or_404 
         like = Like.objects.filter(user=request.user, post=post)
+        
         if not like.exists():
             return Response({"detail": "You haven't liked this post."}, status=status.HTTP_400_BAD_REQUEST)
         
